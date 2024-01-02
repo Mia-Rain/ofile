@@ -1,0 +1,37 @@
+---
+ofile
+-- underlying library for milang
+---- allowing for opening files in a single command
+---- in UTF8, sanitized UTF8 and OCTAL
+---
+
+---
+Usage
+-- import ./ofile
+---- or enable `features.ofile` (milang)
+-- ofile() "$file" "$type"
+---- return $1 as $TYPE
+  >> types:
+  >>>> UTF8
+  >>>>>> converts from OCTAL behind scenes
+  >>>> UTF8s
+  >>>>>> sanitized UTF8
+  >>>>>> new lines are marked with $, spaces with _ and tabs with \t
+  >>>> OCTAL
+  >>>>>> RAW trimed octal dump of $file
+  >>>> POSIX
+  >>>>>> RAW read loop output
+---
+
+---
+Dependencies
+-- dash & od 
+---
+
+---
+Octal
+-- POSIX sh can directly convert from OCTAL to UTF8
+-- without a lookup table, and can convert other UTF8 codes to OCTAL
+-- as such only OCTAL is directly provided
+-- others may contribute and provide others if they wish
+---
