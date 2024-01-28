@@ -14,11 +14,16 @@ Usage
   >> types:
   >>>> UTF8
   >>>>>> converts from OCTAL behind scenes
+  >>>>>> is extended with unicode after 177
   >>>> UTF8s
+  >>>>>> also see above
   >>>>>> sanitized UTF8
   >>>>>> new lines are marked with $, spaces with _ and tabs with \t
+  >>>>>> while invisible characters are handled by octal 
   >>>> OCTAL
   >>>>>> RAW trimed octal dump of $file
+  >>>> HEX
+  >>>>>> RAW trimed hex dump of $file
   >>>> POSIX
   >>>>>> RAW read loop output
 ---
