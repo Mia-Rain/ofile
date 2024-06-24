@@ -1,0 +1,36 @@
+[ -e "$1" ] || {
+  shcat << EOF
+$1 is not present...
+EOF
+  exit 1
+}
+case "$2" in
+  ("UTF8"|"UTF8s")
+    octdump="$(od -t o1 -An < "$1")"
+    octdump="$(trim_all "$octdump")"
+    utf8 "${2}"
+  ;;
+  ("OCT"*)
+    octdump="$(od -t o1 -An < "$1")"
+    octdump="$(trim_all "$octdump")"
+    shcat << EOF
+$octdump
+EOF
+    exit 0
+  ;;
+  ("HEX"*)
+    hexdump="$(od -t x1 -An < "$1")"
+    hexdump="$(trim_all "$hexdump")"
+    shcat << EOF
+$hexdump
+EOF
+    # this is easier than converting from octal with printf
+    # as each octal number has to be prepended with a 0
+    # then fed through printf '%x ' # %X for capital
+    ##
+    # if compatability is an issue using printf instead is likely better
+  ;;
+  ("POSIX")
+    shcat < "$1"; exit 0
+  ;;
+esac

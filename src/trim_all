@@ -1,0 +1,13 @@
+# Usage: trim_all "   example   string    "
+# Disable globbing to make the word-splitting below safe.
+set -f
+# Set the argument list to the word-splitted string.
+# This removes all leading/trailing white-space and reduces
+# all instances of multiple spaces to a single ("  " -> " ").
+set -- $*
+# Print the argument list as a string.
+printf '%s\n' "$*"
+# Re-enable globbing.
+set +f
+# stolen from github.com/dylanaraps/pure-sh-bible
+# MIT LICENSED; therefore idc
