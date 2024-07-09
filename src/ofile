@@ -1,3 +1,4 @@
+#!/bin/sh
 [ -e "$1" ] || {
   shcat << EOF
 $1 is not present...
@@ -28,7 +29,7 @@ EOF
     # as each octal number has to be prepended with a 0
     # then fed through printf '%x ' # %X for capital
     ##
-    # if compatability is an issue using printf instead is likely better
+    # if compatibility is an issue using printf instead is likely better
   ;;
   ("POSIX")
     shcat < "$1"; exit 0

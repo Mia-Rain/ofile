@@ -1,3 +1,4 @@
+#!/bin/sh
 # Usage: trim_all "   example   string    "
 # Disable globbing to make the word-splitting below safe.
 set -f

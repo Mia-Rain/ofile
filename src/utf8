@@ -1,3 +1,4 @@
+#!/bin/sh
 [ "$1" = "UTF8s" ] && san="1"
 while read -r line || [ "$line" ]; do
   IFS=" "
