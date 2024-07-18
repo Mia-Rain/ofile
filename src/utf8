@@ -32,7 +32,7 @@ while read -r line || [ "$line" ]; do
           ("011") printf '%s' "\t"; shift 1;; # tab
           ("040") printf '_'; shift 1;; # space
           ("012") printf '$\n'; shift 1;; # new line
-          (*) trim_all "printf "\\$1" | od -An -ta)"
+          (*) trim_all "printf "\\$1" | od -v -An -ta)"
           # avoiding od here requires a massive 40 item case table
           # each with hard coded replacements
           # this is rather inefficent use of code space however
