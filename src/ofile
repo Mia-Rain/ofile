@@ -1,5 +1,8 @@
 #!/bin/sh
-[ -e "$1" ] || {
+[ "$1" = "-" ] && {
+  pipe=0
+}
+[ -e "$1" -o "$pipe" ] || {
   shcat << EOF
 $1 is not present...
 EOF
@@ -7,12 +10,20 @@ EOF
 }
 case "$2" in
   ("UTF8"|"UTF8s")
-    octdump="$(od -v -t o1 -An < "$1")"
+    if [ ! "$pipe" ]; then
+      octdump="$(od -v -t o1 -An < "$1")"
+    else
+      octdump="$(od -v -t o1 -An)"
+    fi
     octdump="$(trim_all "$octdump")"
     utf8 "${2}"
   ;;
   ("OCT"*)
-    octdump="$(od -v -t o1 -An < "$1")"
+    if [ ! "$pipe" ]; then
+      octdump="$(od -v -t o1 -An < "$1")"
+    else
+      octdump="$(od -v -t o1 -An)"
+    fi
     octdump="$(trim_all "$octdump")"
     shcat << EOF
 $octdump
@@ -20,7 +31,11 @@ EOF
     exit 0
   ;;
   ("HEX"*)
-    hexdump="$(od -v -t x1 -An < "$1")"
+    if [ ! "$pipe" ]; then
+      hexdump="$(od -v -t x1 -An < "$1")"
+    else
+      hexdump="$(od -v -t x1 -An )"
+    fi
     hexdump="$(trim_all "$hexdump")"
     shcat << EOF
 $hexdump
@@ -32,6 +47,10 @@ EOF
     # if compatibility is an issue using printf instead is likely better
   ;;
   ("POSIX")
-    shcat < "$1"; exit 0
+    if [ ! "$pipe" ]; then
+      shcat < "$1"; exit 0
+    else
+      shcat; exit 0
+    fi
   ;;
 esac
