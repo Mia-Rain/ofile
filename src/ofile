@@ -11,11 +11,10 @@ EOF
 case "$2" in
   ("UTF8"|"UTF8s")
     if [ ! "$pipe" ]; then
-      od -v -t o1 -An < "$1"
+      octdump="$(trim_all $(od -v -t o1 -An < "$1"))"
     else
-      od -v -t o1 -An
+      octdump="$(trim_all $(od -v -t o1 -An))"
     fi
-    #octdump="$(trim_all "$octdump")"
     printf 'Processing... This will take awhile... Sorry...\r'
     utf8 "${2}"
   ;;
@@ -27,8 +26,11 @@ case "$2" in
       #octdump="$(od -v -t o1 -An)"
       od -v -t o1 -An
     fi
-    #octdump="$(trim_all "$octdump")"
+    octdump="$(trim_all "$octdump")"
     printf 'Processing... This will take awhile... Sorry...\r'
+    shcat << EOF
+$octdump
+EOF
     exit 0
   ;;
   ("HEX"*)
