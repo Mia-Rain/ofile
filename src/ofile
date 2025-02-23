@@ -11,35 +11,36 @@ EOF
 case "$2" in
   ("UTF8"|"UTF8s")
     if [ ! "$pipe" ]; then
-      octdump="$(od -v -t o1 -An < "$1")"
+      od -v -t o1 -An < "$1"
     else
-      octdump="$(od -v -t o1 -An)"
+      od -v -t o1 -An
     fi
-    octdump="$(trim_all "$octdump")"
+    #octdump="$(trim_all "$octdump")"
+    printf 'Processing... This will take awhile... Sorry...\r'
     utf8 "${2}"
   ;;
   ("OCT"*)
     if [ ! "$pipe" ]; then
-      octdump="$(od -v -t o1 -An < "$1")"
+      #octdump="$(od -v -t o1 -An < "$1")"
+      od -v -t o1 -An < "$1"
     else
-      octdump="$(od -v -t o1 -An)"
+      #octdump="$(od -v -t o1 -An)"
+      od -v -t o1 -An
     fi
-    octdump="$(trim_all "$octdump")"
-    shcat << EOF
-$octdump
-EOF
+    #octdump="$(trim_all "$octdump")"
+    printf 'Processing... This will take awhile... Sorry...\r'
     exit 0
   ;;
   ("HEX"*)
     if [ ! "$pipe" ]; then
-      hexdump="$(od -v -t x1 -An < "$1")"
+      #hexdump="$(od -v -t x1 -An < "$1")"
+      od -v -t x1 -An < "$1"
     else
-      hexdump="$(od -v -t x1 -An )"
+      #hexdump="$(od -v -t x1 -An )"
+      od -v -t x1 -An -
     fi
-    hexdump="$(trim_all "$hexdump")"
-    shcat << EOF
-$hexdump
-EOF
+    #hexdump="$(trim_all "$hexdump")"
+    printf 'Processing... This will take awhile... Sorry...\r'
     # this is easier than converting from octal with printf
     # as each octal number has to be prepended with a 0
     # then fed through printf '%x ' # %X for capital
