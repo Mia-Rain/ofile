@@ -15,17 +15,22 @@ Usage
   >>>> UTF8
   >>>>>> converts from OCTAL behind scenes
   >>>>>> is extended with unicode after 177
+    >>>>>> this does additional handling in shell and will be very slow for files above 1M
   >>>> UTF8s
   >>>>>> also see above
   >>>>>> sanitized UTF8
   >>>>>> new lines are marked with $, spaces with _ and tabs with \t
-  >>>>>> while invisible characters are handled by octal 
+  >>>>>> while invisible characters are handled by octal
+    >>>>>> this does additional handling in shell and will be very slow for files above 1M
   >>>> OCTAL
-  >>>>>> RAW trimed octal dump of $file
+  >>>>>> RAW octal dump of $file
+    >>>>>> no trimming is done to provide direct control over the data stream
   >>>> HEX
-  >>>>>> RAW trimed hex dump of $file
+  >>>>>> RAW hex dump of $file
+    >>>>>> no trimming is done to provide direct control over the data stream
   >>>> POSIX
   >>>>>> RAW read loop output
+    >>>>>> handled 100% in shell, escape codes, null chars etc will be lost
 ---
 
 ---

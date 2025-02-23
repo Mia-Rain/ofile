@@ -1,0 +1,160 @@
+ofile() {
+#!/bin/sh
+[ "$1" = "-" ] && {
+  pipe=0
+}
+[ -e "$1" -o "$pipe" ] || {
+  shcat << EOF
+$1 is not present...
+EOF
+  return 1
+}
+case "$2" in
+  ("UTF8"|"UTF8s")
+    #printf '\rProcessing... This will take awhile... Sorry...\r'
+    if [ ! "$pipe" ]; then
+      trim_all $(od -v -t o1 -An < "$1") | utf8 "$2"
+    else
+      trim_all $(od -v -t o1 -An) | utf8 "$2"
+    fi
+  ;;
+  ("OCT"*)
+    if [ ! "$pipe" ]; then
+      #octdump="$(od -v -t o1 -An < "$1")"
+      trim_all $(od -v -t o1 -An < "$1")
+    else
+      #octdump="$(od -v -t o1 -An)"
+      trim_all $(od -v -t o1 -An)
+    fi
+    return 0
+  ;;
+  ("HEX"*)
+    if [ ! "$pipe" ]; then
+      #hexdump="$(od -v -t x1 -An < "$1")"
+      od -v -t x1 -An < "$1"
+    else
+      #hexdump="$(od -v -t x1 -An )"
+      od -v -t x1 -An -
+    fi
+    #hexdump="$(trim_all "$hexdump")"
+    printf 'Processing... This will take awhile... Sorry...\r'
+    # this is easier than converting from octal with printf
+    # as each octal number has to be prepended with a 0
+    # then fed through printf '%x ' # %X for capital
+    ##
+    # if compatibility is an issue using printf instead is likely better
+  ;;
+  ("POSIX")
+    if [ ! "$pipe" ]; then
+      shcat < "$1"; return 0
+    else
+      shcat; return 0
+    fi
+  ;;
+esac
+}
+shcat() {
+#!/bin/sh
+while IFS= read -r p || [ "$p" ]; do
+  printf '%s\n' "$p"
+done
+}
+trim_all() {
+#!/bin/sh
+# Usage: trim_all "   example   string    "
+# Disable globbing to make the word-splitting below safe.
+set -f
+# Set the argument list to the word-splitted string.
+# This removes all leading/trailing white-space and reduces
+# all instances of multiple spaces to a single ("  " -> " ").
+set -- $*
+# Print the argument list as a string.
+printf '%s\n' "$*"
+# Re-enable globbing.
+set +f
+# stolen from github.com/dylanaraps/pure-sh-bible
+# MIT LICENSED; therefore idc
+}
+utf8() {
+#!/bin/sh
+[ "$1" = "UTF8s" ] && san="1"
+while read -r line || [ "$line" ]; do
+  IFS=" "
+  set -- ${line};
+  while [ "$1" ]; do
+    # it should be as simple as
+    # printf $(printf '\%s' "$1")
+    # but its sightly more complex because
+    # unicode and ascii vs extended ascii
+    # 0->177 (ascii)
+    # is just single octal
+    # and printf $(printf '\%s' "$oct")
+    # works fine
+    # 302 -> 321 is double octal
+    # and requires that we first read the 3 bits
+    # then shift 1 and read the next 3 bits
+    # then output it all
+    # 341->359 is triple octal
+    # 360+ is quad octal
+    # 360 & quad are the currently largest defined
+    # codes I could find
+    # alas unicode v16 is set to release in september 2024
+    # and characters within unicode v15 are still within 360
+    # quad range
+    # currently no quintuple range is known
+    # and its not currently possible to test for it
+    unset out counter
+    # DEBUG -- printf '| !!! %s\n' "${1:-UNSET $ 1}" >&2 
+    if [ "${1:-0}" -le 40 ]; then
+      [ "$san" ] && { 
+        case "$1" in
+          ("011") printf '%s' "\t"; shift 1;; # tab
+          ("040") printf '_'; shift 1;; # space
+          ("012") printf '$\n'; shift 1;; # new line
+          (*) printf "\\$1" | od -v -An -ta
+          # avoiding od here requires a massive 40 item case table
+          # each with hard coded replacements
+          # this is rather inefficent use of code space however
+            shift 1;;
+          # directly shifting here instead of using the loop later on
+          # is simpler 
+        esac
+      } || {
+        counter=1
+      }
+    elif [ "${1:-0}" -le 301 ]; then
+      # single octal
+      # 0->177
+      # I don't actually know if there is anything defined within 177->302
+      counter=1
+    elif [ "${1:-0}" -le 321 ] && [ "$1" -ge 302 ]; then
+      # double octal
+      counter=2
+    elif [ "${1:-0}" -lt 360 ] && [ "$1" -ge 341 ]; then
+      # triple
+      counter=3
+    elif [ "${1:-0}" -ge 360 ]; then
+      counter=4
+      # quad
+    else
+      "${ERR:?UNDEFINED RANGE @ $input_line}"|| return 1
+    fi
+    # there is probably a better system
+     # than this but honestly idk crap abt octal
+    for oct in $(
+unset n
+while [ "${n:-0}" -lt "${counter:-1}" ]; do 
+  : $((n+=1))
+  printf $n; 
+done
+);  do
+      out="${out}\\$1"
+      [ "$1" ] || break
+      shift 1
+    done
+    printf "${out%\\}"
+    # notably \012 is \n
+  done
+done
+}
+ofile "$@"

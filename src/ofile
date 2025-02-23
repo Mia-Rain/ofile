@@ -20,10 +20,10 @@ case "$2" in
   ("OCT"*)
     if [ ! "$pipe" ]; then
       #octdump="$(od -v -t o1 -An < "$1")"
-      trim_all $(od -v -t o1 -An < "$1")
+      od -v -t o1 -An < "$1"
     else
       #octdump="$(od -v -t o1 -An)"
-      trim_all $(od -v -t o1 -An)
+      od -v -t o1 -An
     fi
     exit 0
   ;;
