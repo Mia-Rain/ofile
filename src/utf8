@@ -26,13 +26,14 @@ while read -r line || [ "$line" ]; do
     # currently no quintuple range is known
     # and its not currently possible to test for it
     unset out counter
-    if [ "$1" -le 40 ]; then
+    # DEBUG -- printf '| !!! %s\n' "${1:-UNSET $ 1}" >&2 
+    if [ "${1:-0}" -le 40 ]; then
       [ "$san" ] && { 
         case "$1" in
           ("011") printf '%s' "\t"; shift 1;; # tab
           ("040") printf '_'; shift 1;; # space
           ("012") printf '$\n'; shift 1;; # new line
-          (*) trim_all "$(printf "\\$1" | od -v -An -ta)"
+          (*) printf "\\$1" | od -v -An -ta
           # avoiding od here requires a massive 40 item case table
           # each with hard coded replacements
           # this is rather inefficent use of code space however
@@ -43,18 +44,18 @@ while read -r line || [ "$line" ]; do
       } || {
         counter=1
       }
-    elif [ "$1" -le 301 ]; then
+    elif [ "${1:-0}" -le 301 ]; then
       # single octal
       # 0->177
       # I don't actually know if there is anything defined within 177->302
       counter=1
-    elif [ "$1" -le 321 ] && [ "$1" -ge 302 ]; then
+    elif [ "${1:-0}" -le 321 ] && [ "$1" -ge 302 ]; then
       # double octal
       counter=2
-    elif [ "$1" -lt 360 ] && [ "$1" -ge 341 ]; then
+    elif [ "${1:-0}" -lt 360 ] && [ "$1" -ge 341 ]; then
       # triple
       counter=3
-    elif [ "$1" -ge 360 ]; then
+    elif [ "${1:-0}" -ge 360 ]; then
       counter=4
       # quad
     else
@@ -64,7 +65,7 @@ while read -r line || [ "$line" ]; do
      # than this but honestly idk crap abt octal
     for oct in $(
 unset n
-while [ "${n:-0}" -lt "$counter" ]; do 
+while [ "${n:-0}" -lt "${counter:-1}" ]; do 
   : $((n+=1))
   printf $n; 
 done
@@ -76,6 +77,4 @@ done
     printf "${out%\\}"
     # notably \012 is \n
   done
-done << EOF
-$octdump
-EOF
+done
