@@ -10,12 +10,12 @@ EOF
 }
 case "$2" in
   ("UTF8"|"UTF8s")
+    printf 'Processing... This will take awhile... Sorry...\r'
     if [ ! "$pipe" ]; then
       octdump="$(trim_all $(od -v -t o1 -An < "$1"))"
     else
       octdump="$(trim_all $(od -v -t o1 -An))"
     fi
-    printf 'Processing... This will take awhile... Sorry...\r'
     utf8 "${2}"
   ;;
   ("OCT"*)
